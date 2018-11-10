@@ -13,7 +13,6 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-import com.android.volley.toolbox.HttpResponse;
 import com.example.project.DB.TokenFitbit;
 import com.example.project.R;
 import com.google.gson.Gson;
