@@ -9,10 +9,12 @@ import io.realm.annotations.RealmClass;
 public class TokenFitbit implements RealmModel {
 
 
-    @PrimaryKey
     String token;
 
+    @PrimaryKey
     String user_id;
+
+    public String userName = "";
 
     public TokenFitbit() {
     }

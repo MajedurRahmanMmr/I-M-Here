@@ -1,13 +1,13 @@
 package com.example.project.Model;
 
 public class CurrentUser {
-    String Name="";
-    String UID="";
+    private String Name = "";
+    private String UID = "";
 
-    String PhoneNumber="";
-    String Nickname="";
-    String ImageURL="";
-    String Email="";
+    private String PhoneNumber = "";
+    private String Nickname = "";
+    private String ImageURL = "";
+    private String Email = "";
 
 
     public CurrentUser() {
@@ -18,6 +18,7 @@ public class CurrentUser {
         this.UID = UID;
 
     }
+
     public String getImageURL() {
         return ImageURL;
     }
@@ -69,6 +70,6 @@ public class CurrentUser {
 
     @Override
     public String toString() {
-        return "Name "+getName()+" Email" + getEmail() +" " + "Phone " +getPhoneNumber() + " UID " + getUID() ;
+        return "Name " + getName() + " Email" + getEmail() + " " + "Phone " + getPhoneNumber() + " UID " + getUID();
     }
 }

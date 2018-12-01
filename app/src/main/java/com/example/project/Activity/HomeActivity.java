@@ -3,17 +3,13 @@ package com.example.project.Activity;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.location.Location;
 import android.net.Uri;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.webkit.JavascriptInterface;
-import android.webkit.WebView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,7 +17,6 @@ import android.widget.Toast;
 import com.example.project.DB.FireBaseDataHelper;
 import com.example.project.DB.TokenFitbit;
 import com.example.project.Model.CustomLocationWithTime;
-import com.example.project.Model.HeartModel.HeartBeat;
 import com.example.project.R;
 import com.firebase.ui.auth.AuthUI;
 
@@ -41,14 +36,8 @@ import com.google.gson.Gson;
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -57,7 +46,6 @@ import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
-import retrofit2.Response;
 
 
 public class HomeActivity extends AppCompatActivity {
@@ -115,7 +103,7 @@ public class HomeActivity extends AppCompatActivity {
 
       /*  Handler handler = new Handler();
         handler.postDelayed(runnable, 5000);
-*/
+        */
 
         heartData();
 
@@ -133,12 +121,13 @@ public class HomeActivity extends AppCompatActivity {
                     public void run() {
                         try {
 
-                            OkHttpClient client = new OkHttpClient();
                             String Token = getTokenFitbit();
+
+                            OkHttpClient client = new OkHttpClient();
                             MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
                             RequestBody body = RequestBody.create(mediaType, "client_id%3D22942C%26grant_type%3Dauthorization_code%26redirect_uri%3Dhttp%253A%252F%252Fexample.com%252Ffitbit_auth%26code%3D1234567890%26code_verifier%3DdBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk=");
                             Request request = new Request.Builder()
-                                    .url("https://api.fitbit.com/1/user/-/activities/heart/date/today/1d/1sec/time/00:00/00:01.json")
+                                    .url("https://api.fitbit.com/1/user/-/activities/heart/date/today/1d.json")
                                     .get()
                                     .addHeader("authorization", "Bearer " + Token)
                                     .addHeader("cache-control", "no-cache")
@@ -147,46 +136,71 @@ public class HomeActivity extends AppCompatActivity {
 
                             okhttp3.Response response = client.newCall(request).execute();
 
-                            if (response.body() != null) {
+                            if (response.body() != null && !Token.trim().isEmpty()) {
 
 
                                 Gson gson = new Gson();
 
-                                HeartBeat heartBeat = gson.fromJson(response.body().string(), HeartBeat.class);
+                                com.example.project.Model.HeartData.Response heartBeat = gson.fromJson(response.body().string(), com.example.project.Model.HeartData.Response.class);
                                 if (heartBeat != null) {
 
                                     Log.e("Heartbeat", heartBeat.toString());
 
-                                    if (heartBeat.getActivitiesHeart() != null && heartBeat.getActivitiesHeart().size() > 0 && heartBeat.getActivitiesHeart().get(0).getHeartRateZones() != null && heartBeat.getActivitiesHeart().get(0).getHeartRateZones().size() > 0){
+                                    if (heartBeat.getActivitiesHeart() != null && heartBeat.getActivitiesHeart().size() > 0 && heartBeat.getActivitiesHeart().get(0).getValue() != null && heartBeat.getActivitiesHeart().get(0).getValue().getHeartRateZones().size() > 0) {
 
 
+                                        final int max = heartBeat.getActivitiesHeart().get(0).getValue().getHeartRateZones().get(0).getMax();
+                                        final int min = heartBeat.getActivitiesHeart().get(0).getValue().getHeartRateZones().get(0).getMin();
+                                        //final int time = heartBeat.getActivitiesHeart().get(0).getHeartRateZones().get(1).getMinutes();
 
-                                        final int max = heartBeat.getActivitiesHeart().get(0).getHeartRateZones().get(1).getMax();
-                                    final int min = heartBeat.getActivitiesHeart().get(0).getHeartRateZones().get(1).getMin();
-                                    final int time = heartBeat.getActivitiesHeart().get(0).getHeartRateZones().get(1).getMinutes();
 
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
 
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(HomeActivity.this, "Data Updated", Toast.LENGTH_SHORT).show();
+                                                TokenFitbit tFitbitUser = getTFitbitUser();
 
-                                            String formate = "Min:" + min + "  Max:" + max + " Time:" + time + " Min";
-                                            TextView textView = findViewById(R.id.snippetHeart);
-                                            textView.setText(formate);
+                                                String ConnectedWith = "";
 
-                                        }
-                                    });
-                                }
+                                                if (tFitbitUser!=null){
+                                                    ConnectedWith = tFitbitUser.userName;
+                                                }
+                                                String formate = ConnectedWith+"\nMin:" + min + "  Max:" + max;
+                                                TextView textView = findViewById(R.id.snippetHeart);
+                                                textView.setText(formate);
+
+                                            }
+                                        });
+                                    }
 
                                 }
 
 
                             } else {
 
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        String formate = "Min:" + 0 + "  Max:" + 0;
+                                        TextView textView = findViewById(R.id.snippetHeart);
+                                        textView.setText(formate);
+
+                                    }
+                                });
+                                Log.e("Fitbit Server Value", response.body().string());
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    String formate = "Min:" + 0 + "  Max:" + 0;
+                                    TextView textView = findViewById(R.id.snippetHeart);
+                                    textView.setText(formate);
+
+                                }
+                            });
                         }
 
                     }
@@ -194,7 +208,7 @@ public class HomeActivity extends AppCompatActivity {
 
                 thread.start();
             }
-        }, 0, 5000);
+        }, 0, 10000);
 
     }
 
@@ -215,6 +229,12 @@ public class HomeActivity extends AppCompatActivity {
             return first.getToken();
         }
         return "";
+    }
+
+    private TokenFitbit getTFitbitUser() {
+        Realm realm = Realm.getDefaultInstance();
+        TokenFitbit first = realm.where(TokenFitbit.class).findFirst();
+        return  first;
     }
 
     private void InitLocationListener() {

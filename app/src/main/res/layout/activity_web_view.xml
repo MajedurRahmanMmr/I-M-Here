@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activity.WebViewActivity">
+
     <RelativeLayout
         android:id="@+id/navATC"
         android:layout_width="match_parent"
@@ -13,6 +14,7 @@
         android:background="@color/colorPrimaryDark">
 
         <TextView
+            android:id="@+id/title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -20,17 +22,63 @@
             android:text="Fitbit Initializer"
             android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
             android:textColor="#fff" />
+
+        <ImageView
+            android:id="@+id/webViewCacheClear"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_margin="10dp"
+            android:background="@drawable/ic_remove_circle_outline_black_24dp"
+            android:backgroundTint="#ffff" />
     </RelativeLayout>
 
+
     <WebView
-
         android:id="@+id/webViewFitbit"
-
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/navATC">
 
+
     </WebView>
 
+    <LinearLayout
+        android:id="@+id/locading"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/textView"
+            app:layout_constraintEnd_toEndOf="@+id/textView"
+            app:layout_constraintStart_toStartOf="@+id/textView"
+            app:layout_constraintTop_toTopOf="@+id/webViewFitbit"
+            app:layout_constraintVertical_bias="0.969" />
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Loading.. Please wait"
+            app:layout_constraintBottom_toBottomOf="@+id/webViewFitbit"
+            tools:layout_editor_absoluteX="126dp" />
+
+    </LinearLayout>
 </android.support.constraint.ConstraintLayout>
